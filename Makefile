@@ -9,5 +9,8 @@ PRE_JS = pre.js
 all:
 	emcc $(SRC) -o $(OUT_JS) -sEXPORTED_FUNCTIONS=_testWasmBuiltin -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -sERROR_ON_UNDEFINED_SYMBOLS=0 --pre-js $(PRE_JS)
 
+cpp:
+	g++ $(SRC) -o test_cpp -std=c++11
+
 clean:
 	rm -f $(OUT_JS) $(OUT_WASM)
