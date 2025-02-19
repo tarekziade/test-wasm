@@ -8,24 +8,28 @@
 */
 getWasmImports = function() {
   assignWasmImports();
-  if (wasmMemory) {
-    const gemmModule = WebAssembly["mozIntGemm"];
-    var gemmModuleExports = new WebAssembly.Instance(gemmModule(), {
-      "": {
-        memory: wasmMemory
-      }
-    }).exports;
-    return {
-      "env": wasmImports,
-      "wasi_snapshot_preview1": wasmImports,
-      "wasm_gemm": gemmModuleExports
-    };
-  } else {
-    return {
-      "env": wasmImports,
-      "wasi_snapshot_preview1": wasmImports,
-    };
+
+  if (!wasmMemory) {
+    var INITIAL_MEMORY = 16777216;
+    wasmMemory = new WebAssembly.Memory({
+      "initial": INITIAL_MEMORY / 65536,
+      "maximum": 4294967296 / 65536,
+      "shared": true
+    });
   }
+  const gemmModule = WebAssembly["mozIntGemm"];
+  var gemmModuleExports = new WebAssembly.Instance(gemmModule(), {
+    "": {
+      memory: wasmMemory
+    }
+  }).exports;
+  return {
+    'GOT.mem': new Proxy(wasmImports, GOTHandler),
+    'GOT.func': new Proxy(wasmImports, GOTHandler),
+    "env": wasmImports,
+    "wasi_snapshot_preview1": wasmImports,
+    "wasm_gemm": gemmModuleExports
+  };
 }
 
 Module["instantiateWasm"] = async (info, receiveInstance) => {
