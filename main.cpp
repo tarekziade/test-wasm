@@ -52,7 +52,11 @@ extern "C" void testWasmBuiltin() {
     auto end_ref = std::chrono::high_resolution_clock::now();
     auto duration_ref = std::chrono::duration_cast<std::chrono::nanoseconds>(end_ref - start_ref).count();
 
+ 
+    printf("Reference function time: %lld ns\n", duration_ref);
 #ifdef __EMSCRIPTEN__
+
+    printf("Calling builtin function...\n");
     // Measure time for imported WASM function
     auto start_wasm = std::chrono::high_resolution_clock::now();
     GeckoDequantizeLinear(
@@ -70,7 +74,6 @@ extern "C" void testWasmBuiltin() {
     printf("WASM function time: %lld ns\n", duration_wasm);
 #endif
     
-    printf("Reference function time: %lld ns\n", duration_ref);
 }
 
 #ifndef __EMSCRIPTEN__
