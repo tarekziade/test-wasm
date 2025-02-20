@@ -34,7 +34,8 @@ getWasmImports = function() {
 
 Module["instantiateWasm"] = async (info, receiveInstance) => {
   const wasmBinaryFile = findWasmBinary();
-  const bytes = await getBinaryPromise(wasmBinaryFile);
+  var response = await fetch(wasmBinaryFile, { credentials: 'same-origin' });
+  const bytes = await response.arrayBuffer();
   const module = await WebAssembly.compile(bytes);
   try {
     var instance = new WebAssembly.Instance(module, getWasmImports());
